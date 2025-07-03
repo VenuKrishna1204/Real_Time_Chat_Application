@@ -137,9 +137,11 @@ This is a real-time chat application built with Django Channels, enabling users 
 **🔷 Step 10: Setup chat_app/routing.py**
 
 **🔷 Step 11: Create consumers.py**
+
 	✅Handles WebSocket connections, sends/receives real-time messages.
 
 **🔷 Step 12: Create Templates**
+
 	✅In chat_app/templates/chat/:
 	
 	✅base.html – common layout
@@ -153,6 +155,7 @@ This is a real-time chat application built with Django Channels, enabling users 
 	✅start_chat.html – actual chat room page
 
 **🔷 Step 13: Static Files**
+
 	✅Add any CSS/JS to chat_app/static/ and link in templates.
 
 **🔷 Step 14: Run Server**
@@ -170,6 +173,7 @@ This is a real-time chat application built with Django Channels, enabling users 
 	Quit the server with CTRL-BREAK.
 
 **🔷 Step 15: Test Real-Time Chat**
+
 	✅Login as User1 in Chrome.
 	
 	✅Login as User2 in Firefox or Incognito.
