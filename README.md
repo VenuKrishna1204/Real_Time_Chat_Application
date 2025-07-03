@@ -1,175 +1,181 @@
-![image](https://github.com/user-attachments/assets/8e6cebf5-d756-4fd0-9463-ec72bff359c0)# Real_Time_Chat_Application
+****Real-Time Django Channels Chat Application****
 
-✅ 1. Project Objective
-Build a Real-Time Chat Application using Django Channels where:
+This is a real-time chat application built with Django Channels, enabling users to:
 
-Users register/login.
+	✅ Register and login.
+	
+	✅ Add friends to chat with.
+	
+	✅ See friends' online/offline status.
+	
+	✅ Chat in real-time (WebSocket) with unread message counts.
 
-Users add friends to chat with.
 
-Users see friends' online/offline status.
+ **1. Project Objective**
 
-Users chat in real-time (WebSocket) with unread message count.
+**Build a Real-Time Chat Application using Django Channels where:**
+    
+    ✅Users register/login.
+    
+    ✅Users add friends to chat with.
+    
+    ✅Users see friends' online/offline status.
+    
+    ✅Users chat in real-time (WebSocket) with unread message count.
 
-✅ 2. Final Project Structure
+** 2. Final Project Structure**
+
 ![image](https://github.com/user-attachments/assets/6a8adb1f-ddd2-402b-a084-82b221430afd)
+
+
 ![image](https://github.com/user-attachments/assets/4c5743c7-c359-41ab-9c3e-a155941d6387)
-✅ 3. Step-by-Step Execution
-🔷 Step 1: Create Project & App
-bash
-Copy
-Edit
-django-admin startproject django_channels_chat
-cd django_channels_chat
-python manage.py startapp chat_app
-🔷 Step 2: Install Requirements
-In terminal:
 
-bash
-Copy
-Edit
-pip install django channels
-🔷 Step 3: Update settings.py
-Add to INSTALLED_APPS:
 
-python
-Copy
-Edit
-INSTALLED_APPS = [
-    ...,
-    'channels',
-    'chat_app',
-]
-Add ASGI application:
+**3. Step-by-Step Execution**
 
-python
-Copy
-Edit
-ASGI_APPLICATION = 'django_channels_chat.asgi.application'
-(Optional) For production:
+**🔷 Step 1: Navigations**
 
-python
-Copy
-Edit
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
-🔷 Step 4: Setup Models in chat_app/models.py
-Define models:
+	✅PS D:\> cd .\DJANGO\
+	
+	✅PS D:\DJANGO> cd .\VENU\
+	
+	✅PS D:\DJANGO\VENU> cd .\Projects\
+	
+	✅PS D:\DJANGO\VENU\Projects> cd .\django_channels_chat\
+	
+	✅PS D:\DJANGO\VENU\Projects\django_channels_chat> ls
+	
+	
+		Directory: D:\DJANGO\VENU\Projects\django_channels_chat
+	
+	
+	Mode                 LastWriteTime         Length Name
+	----                 -------------         ------ ----
+	d-----        02-07-2025     15:50                chat_app
+	d-----        02-07-2025     15:28                django_channels_chat
+	-a----        02-07-2025     19:57         176128 db.sqlite3
+	-a----        02-07-2025     15:27            698 manage.py
+	
 
-ChatSession: stores user pairs.
+**🔷 Step 2: Create Project & App**
 
-ChatMessage: stores each message with timestamp, read status.
+	django-admin startproject django_channels_chat
+	cd django_channels_chat
+	python manage.py startapp chat_app
 
-Uses Django’s User model.
 
-🔷 Step 5: Migrations
-bash
-Copy
-Edit
-python manage.py makemigrations
-python manage.py migrate
-🔷 Step 6: Create Superuser
-bash
-Copy
-Edit
-python manage.py createsuperuser
-🔷 Step 7: Configure urls.py
-In django_channels_chat/urls.py:
-python
-Copy
-Edit
-from django.contrib import admin
-from django.urls import path, include
+**🔷 Step 3: Install Requirements**
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('chat_app.urls')),
-]
-In chat_app/urls.py:
-python
-Copy
-Edit
-from django.urls import path
-from . import views
+	In terminal:
+	pip install django channels  or pip install -r requirements.txt
+ 
+**🔷 Step 4: Update settings.py**
 
-urlpatterns = [
-    path('', views.home, name='home'),
-    path('create_friend/', views.create_friend, name='create_friend'),
-    path('friend_list/', views.friend_list, name='friend_list'),
-    path('chat/<str:room_name>/', views.start_chat, name='start_chat'),
-]
-🔷 Step 8: Configure ASGI for Channels
-In django_channels_chat/asgi.py:
-python
-Copy
-Edit
-import os
-from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-import chat_app.routing
+		**Add to INSTALLED_APPS:**
+		
+		✅INSTALLED_APPS = [
+		    ...,
+		    'channels',
+		    'chat_app',
+		]
+  
+		**Add ASGI application:**
+  
+	✅ASGI_APPLICATION = 'django_channels_chat.asgi.application'
+	(Optional) For production:
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_channels_chat.settings')
+	CHANNEL_LAYERS = {
+	    "default": {
+	        "BACKEND": 
+	        },
+	    },
+	}
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            chat_app.routing.websocket_urlpatterns
-        )
-    ),
-})
-🔷 Step 9: Setup chat_app/routing.py
-python
-Copy
-Edit
-from django.urls import re_path
-from . import consumers
+ 
+**🔷 Step 5: Setup Models in chat_app/models.py**
+	✅Define models:
+	
+	✅ChatSession: stores user pairs.
+	
+	✅ChatMessage: stores each message with timestamp, read status.
+	
+	✅Uses Django’s User model.
 
-websocket_urlpatterns = [
-    re_path(r'ws/chat/(?P<room_name>\w+)/$', consumers.ChatConsumer.as_asgi()),
-]
-🔷 Step 10: Create consumers.py
-Handles WebSocket connections, sends/receives real-time messages.
+**🔷 Step 6: Migrations**
 
-🔷 Step 11: Create Templates
-In chat_app/templates/chat/:
+	✅python manage.py makemigrations
+		No changes detected
+ 
+	✅python manage.py migrate
 
-base.html – common layout
+	Operations to perform:
+	  Apply all migrations: admin, auth, chat_app, contenttypes, sessions
+	Running migrations:
+	  No migrations to apply.
 
-home.html – app information, links to add friends & chat list
+ **🔷 Step 7: Create Superuser**
 
-create_friend.html – displays all users to add as friends
+	✅python manage.py createsuperuser
+ 
+ 	**output**
+	Username (leave blank to use 'badbo'): venu
+	Error: That username is already taken.
+	Username (leave blank to use 'badbo'): aiml
+	Email address: gaddamvenu12042004@gmail.com
+	Password: 
+	Password (again):
+	This password is too short. It must contain at least 8 characters.
+	This password is too common.
+	Bypass password validation and create user anyway? [y/N]: y
+	Superuser created successfully.
 
-friend_list.html – shows friends list with online status & unread count
 
-start_chat.html – actual chat room page
+**🔷 Step 8: Configure urls.py**
 
-🔷 Step 12: Static Files
-Add any CSS/JS to chat_app/static/ and link in templates.
+**🔷 Step 9: Configure ASGI for Channels**
 
-🔷 Step 13: Run Server
-bash
-Copy
-Edit
-python manage.py runserver
-Open:
+**🔷 Step 10: Setup chat_app/routing.py**
 
-http://127.0.0.1:8000/
+**🔷 Step 11: Create consumers.py**
+	✅Handles WebSocket connections, sends/receives real-time messages.
 
-🔷 Step 14: Test Real-Time Chat
-Login as User1 in Chrome.
+**🔷 Step 12: Create Templates**
+	✅In chat_app/templates/chat/:
+	
+	✅base.html – common layout
+	
+	✅home.html – app information, links to add friends & chat list
+	
+	✅create_friend.html – displays all users to add as friends
+	
+	✅friend_list.html – shows friends list with online status & unread count
+	
+	✅start_chat.html – actual chat room page
 
-Login as User2 in Firefox or Incognito.
+**🔷 Step 13: Static Files**
+	✅Add any CSS/JS to chat_app/static/ and link in templates.
 
-Add each other as friends.
+**🔷 Step 14: Run Server**
 
-Start chat and test real-time message updates.
+	✅python manage.py runserver
+	Open:
+ 
+	Watching for file changes with StatReloader
+	Performing system checks...
+	
+	System check identified no issues (0 silenced).
+	July 03, 2025 - 09:20:40
+	Django version 5.1.6, using settings 'django_channels_chat.settings'
+	Starting ASGI/Daphne version 4.2.0 development server at http://127.0.0.1:8000/
+	Quit the server with CTRL-BREAK.
+
+**🔷 Step 15: Test Real-Time Chat**
+	✅Login as User1 in Chrome.
+	
+	✅Login as User2 in Firefox or Incognito.
+	
+	✅Add each other as friends.
+	
+	✅Start chat and test real-time message updates.
 
 
