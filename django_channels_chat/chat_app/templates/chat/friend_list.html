@@ -1,0 +1,52 @@
+{% extends './base.html' %}
+
+{% block content %}
+<center><h1>My Chat List</h1></center>
+<hr/>
+
+<div style="width: 60%; margin: auto; background-color: #e6f7ff; border-radius: 10px; padding: 10px;">
+{% for user in user_list %}
+    <div id="{{ user.user_name }}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ccc;">
+        <div style="display: flex; align-items: center;">
+            <!-- Default profile/online image -->
+            <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="Profile" style="width:40px; height:40px; border-radius:50%; margin-right:10px; border: 2px solid {% if user.status %}green{% else %}gray{% endif %};">
+
+            <a href="{% url 'start_chat' user.room_name %}" style="text-decoration: none; color: #333; font-weight: bold;">
+                🧑 | {{ user.user_name|title }}
+                <span id="{{ user.user_id }}" class="w3-badge w3-large w3-green w3-margin-left">{{ user.un_read_msg_count }}</span>
+            </a>
+        </div>
+        <small id="status" style="color: {% if user.status %}green{% else %}gray{% endif %}; font-weight: bold;">
+            {% if user.status %}Online{% else %}Offline{% endif %}
+        </small>
+    </div>
+{% endfor %}
+</div>
+<hr/>
+{% endblock %}
+
+{% block script %}
+<script>
+    PersonalSocket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if(data.msg_type === 'WENT_ONLINE'){
+            const statusElem = document.getElementById(data.user_name).querySelector('#status');
+            statusElem.textContent = 'Online';
+            statusElem.style.color = 'green';
+            const imgElem = document.getElementById(data.user_name).querySelector('img');
+            imgElem.style.border = '2px solid green';
+        }
+        else if(data.msg_type === 'WENT_OFFLINE'){
+            const statusElem = document.getElementById(data.user_name).querySelector('#status');
+            statusElem.textContent = 'Offline';
+            statusElem.style.color = 'gray';
+            const imgElem = document.getElementById(data.user_name).querySelector('img');
+            imgElem.style.border = '2px solid gray';
+        }
+        else if(data.msg_type === 'MESSAGE_COUNTER'){
+            let val = document.getElementById(data.user_id).textContent;
+            document.getElementById(data.user_id).textContent = parseInt(val) + 1;
+        }
+    }
+</script>
+{% endblock %}

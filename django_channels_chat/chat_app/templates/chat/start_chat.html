@@ -1,0 +1,189 @@
+{% extends './base.html' %}
+{% load convert_date %}
+
+{% block content %}
+<style>
+    .chat-header {
+        background-color: #e67118;
+        color: white;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        width: 60%;
+        margin: auto;
+    }
+
+    .chat-container {
+        width: 60%;
+        margin: auto;
+        border: 2px solid #341a70;
+        border-radius: 8px;
+        background-color: #f5f7fa;
+        padding: 10px;
+    }
+
+    .chat-log {
+        margin: 10px 0;
+        padding: 10px;
+        height: 350px;
+        overflow-y: auto;
+        border: 1px solid #5f0c0c;
+        border-radius: 5px;
+        background-color: rgb(80, 132, 79);
+    }
+
+    .chat-box {
+        background-color: #f5f0f5;
+        color: rgb(25, 3, 3);
+        padding: 8px;
+        margin: 5px;
+        border-radius: 6px;
+        width: fit-content;
+        max-width: 90%;
+        word-wrap: break-word;
+        font-size: large;
+    }
+
+    .message-meta {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .chat-input-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .chat-input-container input[type="text"] {
+        width: 80%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #d1c0c0;
+    }
+
+    .chat-input-container input[type="button"] {
+        padding: 8px 16px;
+        background-color: #98294a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .nav-links {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .nav-links a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #df992a;
+        font-weight: bold;
+    }
+
+    .nav-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="chat-header">
+     {{opposite_user.username | title}} 
+    {% if opposite_user.profile_detail.is_online %}
+        <span style="font-size: 20px; color: rgb(0, 255, 0); margin-left: 10px;">🟢 Online</span>
+    {% else %}
+        <span style="font-size: 20px; color: rgb(17, 200, 90); margin-left: 10px;">⚫ Offline</span>
+    {% endif %}
+</div>
+
+<div class="chat-container">
+    <div id="chat-log" class="chat-log">
+        {% for msg in fetch_all_message %}
+        <div class="chat-box" id="{{msg.id}}">
+            <div class="message-meta">
+                {{msg.user.username}} - {{msg.message_detail.timestamp|convert_date|date:"M d, Y H:i"}}
+            </div>
+            <div>
+                • {{msg.message_detail.msg}}
+            </div>
+            {% if msg.user == request.user %}
+            <div style="text-align: right;">
+                <small style="{% if msg.message_detail.read %}color: rgb(8, 255, 8);{% else %}color: #bbb8b8;{% endif %} font-weight: bold;">✔✔</small>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="chat-input-container">
+        <input id="chat-message-input" type="text" placeholder="Enter Message..." autofocus>
+        <input id="chat-message-submit" type="button" value="Send">
+    </div>
+</div>
+
+<div class="nav-links">
+    <a href="{% url 'home' %}">🏠 Home</a>
+    <a href="{% url 'friend_list' %}">💬 My Chat List</a>
+</div>
+
+{{ room_name|json_script:"room_name" }}
+{% endblock %}
+
+{% block script %}
+<script>
+    const roomName = JSON.parse(document.getElementById('room_name').textContent);
+
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+
+    chatSocket.onopen = function(e){
+        chatSocket.send(JSON.stringify({
+            'msg_type': 'ALL_MESSAGE_READ',
+            'user': '{{request.user.username}}'
+        }));
+        document.title = "Chat Room";
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.querySelector('#chat-log');
+
+        if(data.msg_type === 'TEXT_MESSAGE'){
+            const msg = document.createElement('div');
+            msg.className = 'chat-box';
+            msg.innerHTML = `<div class="message-meta">${data.user} - ${data.timestamp}</div>
+                             <div>• ${data.message}</div>`;
+            chatLog.appendChild(msg);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        if(data.msg_type === 'ERROR_OCCURED'){
+            alert(data.error_message);
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const input = document.querySelector('#chat-message-input');
+        const message = input.value;
+        if(message.trim() !== ''){
+            chatSocket.send(JSON.stringify({
+                'msg_type': 'TEXT_MESSAGE',
+                'message': message,
+                'user': '{{request.user.username}}'
+            }));
+            input.value = '';
+        }
+    };
+
+    document.querySelector('#chat-message-input').onkeyup = function(e){
+        if (e.keyCode === 13) {
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends './base.html' %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 50px;">
+
+    <h1 style="font-size: 50px; color: hsl(348, 48%, 41%); margin-bottom: 30px;"><b>
+        💬 CHAT APP 💬 </b>
+    </h1>
+
+    {% if request.user.is_authenticated %}
+    <h2 style="font-size: 28px; color: #333;">
+        Hello <span style="color: #FF4500;">{{ request.user.username|title }}</span>!
+    </h2>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'friend_list' %}" style="text-decoration: none;">
+            <button style="
+                background-color: #FF8C00;
+                color: white;
+                font-size: 18px;
+                padding: 12px 25px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                box-shadow: 2px 2px 5px grey;
+                margin: 10px;">
+                📂 My Chat List
+                {% if unread_msg > 0 %}
+                    <span id="overall_unread" style="
+                        background-color: green;
+                        color: white;
+                        border-radius: 50%;
+                        padding: 4px 10px;
+                        font-weight: bold;
+                        margin-left: 5px;">
+                        {{ unread_msg }}
+                    </span>
+                {% endif %}
+            </button>
+        </a>
+
+        <a href="{% url 'create_friend' %}" style="text-decoration: none;">
+            <button style="
+                background-color: #4169E1;
+                color: white;
+                font-size: 18px;
+                padding: 12px 25px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                box-shadow: 2px 2px 5px grey;
+                margin: 10px;">
+                ➕ Add Friend to Chat List
+            </button>
+        </a>
+
+        <a href="/admin/" style="text-decoration: none;">
+            <button style="
+                background-color: #2E8B57;
+                color: white;
+                font-size: 18px;
+                padding: 12px 25px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                box-shadow: 2px 2px 5px grey;
+                margin: 10px;">
+                🛠️ Admin Login
+            </button>
+        </a>
+    </div>
+
+    {% else %}
+    <h3 style="color: red; margin-top: 20px;">
+        Login Required : <a href="/api_auth/login/">Login</a>
+    </h3>
+
+    <div style="margin-top: 30px;">
+        <a href="/admin/" style="text-decoration: none;">
+            <button style="
+                background-color: #2E8B57;
+                color: white;
+                font-size: 18px;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                box-shadow: 2px 2px 5px grey;">
+                🛠️ Admin Login
+            </button>
+        </a>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; color: #777;">
+        <p>Start chatting with your friends in real-time 🚀</p>
+    </div>
+
+</div>
+<div style="font-size:small; width: 80%; margin: auto; background-color: #e2ecf4; padding: 20px; border-radius: 6px; border: 1px solid #d41a1a;">
+    <h2>About This Application</h2>
+    <p>
+        This Chat App allows registered users to communicate in real-time with their friends.
+        You can easily add new friends to your chat list, check their online status, and exchange messages instantly.
+    </p>
+    <ul>
+        <li>👤 Create your profile and login securely.</li>
+        <li>➕ Add friends to start conversations.</li>
+        <li>🟢 Check online or offline status of friends.</li>
+    </ul>
+    <p>
+        This application is ideal for learning real-time web technologies and deploying scalable chat systems.
+    </p>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    PersonalSocket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (data.msg_type === 'MESSAGE_COUNTER') {
+            document.getElementById("overall_unread").textContent = data.overall_unread_msg
+        }
+    }
+</script>
+{% endblock %}
