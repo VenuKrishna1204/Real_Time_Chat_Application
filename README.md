@@ -182,4 +182,80 @@ This is a real-time chat application built with Django Channels, enabling users 
 	
 	✅Start chat and test real-time message updates.
 
+**output:**
+
+	user1:
+ ![outpu1](https://github.com/user-attachments/assets/5a7ee8c5-5167-45bd-8e80-287e711ad662)
+
+ login
+
+ ![output2](https://github.com/user-attachments/assets/0274a4db-2c78-4aea-b140-70a1a3409e95)
+
+ create friend list
+
+ ![output5](https://github.com/user-attachments/assets/51d8166e-e246-4e04-a47f-495af8f00931)
+
+added frined list
+
+![6](https://github.com/user-attachments/assets/ee613dff-06be-48ab-a206-12aeb46932a0)
+
+chat 
+
+![9](https://github.com/user-attachments/assets/722c1fa0-211d-4ed6-ae43-db82bf087773)
+
+![10](https://github.com/user-attachments/assets/f8790c93-d357-448d-a70f-16a6d704f0aa)
+
+my chat list
+
+![13](https://github.com/user-attachments/assets/2155c5e7-a474-44f1-ba23-e7848925ed63)
+
+
+ user2
+
+ ![output3](https://github.com/user-attachments/assets/183c91cc-80dd-48a3-9826-35cd2b5c2a7f)
+
+ create friend list
+
+ ![output4](https://github.com/user-attachments/assets/aed81e31-0271-4b6c-9bcd-52ec9a0e7cce)
+
+ added friend list
+
+ ![7](https://github.com/user-attachments/assets/0531dd09-667c-4765-96a5-6d18f2b74689)
+
+ chat
+
+ ![8](https://github.com/user-attachments/assets/164ebc3e-c693-4197-b311-f068cfcc3c01)
+
+![11](https://github.com/user-attachments/assets/bbe96ab4-d0af-4c9e-8ab8-3827265b9aa2)
+
+my chat list
+
+![12](https://github.com/user-attachments/assets/df10d542-9f3c-4675-a13e-ff799e1ad19d)
+
+
+
+**Administation:**
+
+
+![14](https://github.com/user-attachments/assets/4716f215-3d44-4bbc-a165-3698a69d1a8f)
+
+
+delete chat messgaes
+
+![15](https://github.com/user-attachments/assets/9f934635-314f-4ffe-a26f-daebb6962989)
+
+![16](https://github.com/user-attachments/assets/8e8b7942-732a-4661-a153-1e3df34f288d)
+
+
+
+**Credits**
+
+	Built by Your Name as a part of learning Django Channels and WebSocket-based applications.
+
+**License**
+   
+	This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+
 
